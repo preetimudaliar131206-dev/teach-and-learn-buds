@@ -27,10 +27,10 @@ const mockSessions: Session[] = [
   {
     id: "1",
     partner: {
-      name: "Sarah Chen",
+      name: "Priya Sharma",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
     },
-    skill: "UI/UX Design",
+    skill: "UI/UX Design Workshop",
     type: "learning",
     date: "Today",
     time: "3:00 PM",
@@ -42,11 +42,11 @@ const mockSessions: Session[] = [
   {
     id: "2",
     partner: {
-      name: "Marcus Johnson",
+      name: "Arjun Reddy",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
     },
-    skill: "Music Production",
-    type: "teaching",
+    skill: "DSA Masterclass",
+    type: "learning",
     date: "Tomorrow",
     time: "10:00 AM",
     duration: "60 min",
@@ -57,29 +57,59 @@ const mockSessions: Session[] = [
   {
     id: "3",
     partner: {
-      name: "Elena Rodriguez",
+      name: "Ananya Iyer",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
     },
-    skill: "Italian Cooking",
+    skill: "Community Yoga Session",
     type: "learning",
-    date: "Jan 5",
-    time: "2:00 PM",
+    date: "Saturday",
+    time: "7:00 AM",
     duration: "90 min",
-    status: "completed",
-    credits: 4,
+    status: "upcoming",
+    credits: 0,
+    meetLink: "https://meet.google.com/yoga-community",
   },
   {
     id: "4",
     partner: {
-      name: "James Wilson",
+      name: "Rohit Kapoor",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
     },
-    skill: "Photography",
+    skill: "Financial Literacy Meetup",
     type: "learning",
-    date: "Jan 8",
-    time: "4:00 PM",
-    duration: "60 min",
+    date: "Sunday",
+    time: "11:00 AM",
+    duration: "120 min",
+    status: "upcoming",
+    credits: 0,
+    meetLink: "https://meet.google.com/finance-community",
+  },
+  {
+    id: "5",
+    partner: {
+      name: "Kavitha Nair",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
+    },
+    skill: "Photography Walk - Marine Drive",
+    type: "learning",
+    date: "Jan 15",
+    time: "6:00 AM",
+    duration: "180 min",
     status: "pending",
+    credits: 0,
+  },
+  {
+    id: "6",
+    partner: {
+      name: "Arjun Reddy",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+    },
+    skill: "React Mentorship Session",
+    type: "learning",
+    date: "Jan 5",
+    time: "2:00 PM",
+    duration: "60 min",
+    status: "completed",
     credits: 2,
   },
 ];
@@ -87,7 +117,7 @@ const mockSessions: Session[] = [
 const tabs = [
   { id: "upcoming", label: "Upcoming" },
   { id: "completed", label: "Completed" },
-  { id: "pending", label: "Pending" },
+  { id: "pending", label: "Requests" },
 ];
 
 export default function Sessions() {
@@ -105,9 +135,9 @@ export default function Sessions() {
         <div className="container max-w-2xl mx-auto">
           {/* Header */}
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-foreground">Sessions</h1>
+            <h1 className="text-2xl font-bold text-foreground">Learning Sessions</h1>
             <p className="text-muted-foreground text-sm">
-              Manage your teaching and learning sessions
+              Your 1:1 sessions & community meetups
             </p>
           </div>
 

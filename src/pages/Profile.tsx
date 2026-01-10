@@ -1,24 +1,26 @@
 import { useState } from "react";
-import { Edit2, Settings, Plus, Coins, Calendar, Star } from "lucide-react";
+import { Edit2, Settings, Plus, Coins, Calendar, Star, Users, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { TrustBadge } from "@/components/TrustBadge";
 import { SkillTag } from "@/components/SkillTag";
 
 const mockProfile = {
-  name: "Alex Thompson",
-  email: "alex@example.com",
+  name: "Vikram Mehta",
+  email: "vikram@example.com",
   avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
-  location: "New York, NY",
-  bio: "Product designer with a passion for music production. Always eager to learn new creative skills!",
-  skillsOffered: ["Product Design", "Figma", "Music Production", "Ableton Live"],
-  skillsWanted: ["Photography", "Spanish", "Cooking", "Yoga"],
-  credits: 12,
+  location: "Pune, Maharashtra",
+  bio: "Product manager at a fintech startup. Love teaching product management and hosting community tech talks!",
+  skillsOffered: ["Product Management", "Figma", "Agile/Scrum", "User Research"],
+  skillsWanted: ["Photography", "Tamil", "Cooking", "Yoga"],
+  credits: 15,
   rating: 4.8,
-  sessionsCompleted: 24,
+  sessionsCompleted: 32,
+  communityMeets: 8,
   isVerified: true,
   isTrusted: true,
-  memberSince: "January 2024",
+  linkedInVerified: true,
+  memberSince: "March 2024",
 };
 
 export default function Profile() {
@@ -70,12 +72,18 @@ export default function Profile() {
                   </p>
                 </div>
 
-                {/* Trust Badges */}
-                <div className="flex flex-wrap gap-2">
-                  {profile.isVerified && <TrustBadge type="verified" />}
-                  <TrustBadge type="rating" value={profile.rating} />
-                  {profile.isTrusted && <TrustBadge type="trusted" />}
-                </div>
+              {/* Trust Badges */}
+              <div className="flex flex-wrap gap-2">
+                {profile.isVerified && <TrustBadge type="verified" />}
+                <TrustBadge type="rating" value={profile.rating} />
+                {profile.isTrusted && <TrustBadge type="trusted" />}
+                {profile.linkedInVerified && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#0077B5]/10 text-[#0077B5] border border-[#0077B5]/20">
+                    <Linkedin className="w-3 h-3" />
+                    LinkedIn
+                  </div>
+                )}
+              </div>
               </div>
 
               {/* Bio */}
@@ -84,26 +92,33 @@ export default function Profile() {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-4 mb-6 animate-fade-in-up">
-            <div className="bg-card rounded-xl p-4 shadow-soft text-center">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                <Coins className="w-5 h-5 text-primary" />
+          <div className="grid grid-cols-4 gap-3 mb-6 animate-fade-in-up">
+            <div className="bg-card rounded-xl p-3 shadow-soft text-center">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <Coins className="w-4 h-4 text-primary" />
               </div>
-              <div className="text-2xl font-bold text-foreground">{profile.credits}</div>
+              <div className="text-xl font-bold text-foreground">{profile.credits}</div>
               <div className="text-xs text-muted-foreground">Credits</div>
             </div>
-            <div className="bg-card rounded-xl p-4 shadow-soft text-center">
-              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-2">
-                <Calendar className="w-5 h-5 text-accent" />
+            <div className="bg-card rounded-xl p-3 shadow-soft text-center">
+              <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-2">
+                <Calendar className="w-4 h-4 text-accent" />
               </div>
-              <div className="text-2xl font-bold text-foreground">{profile.sessionsCompleted}</div>
+              <div className="text-xl font-bold text-foreground">{profile.sessionsCompleted}</div>
               <div className="text-xs text-muted-foreground">Sessions</div>
             </div>
-            <div className="bg-card rounded-xl p-4 shadow-soft text-center">
-              <div className="w-10 h-10 rounded-lg bg-trust-gold/10 flex items-center justify-center mx-auto mb-2">
-                <Star className="w-5 h-5 text-trust-gold" />
+            <div className="bg-card rounded-xl p-3 shadow-soft text-center">
+              <div className="w-9 h-9 rounded-lg bg-secondary/50 flex items-center justify-center mx-auto mb-2">
+                <Users className="w-4 h-4 text-foreground" />
               </div>
-              <div className="text-2xl font-bold text-foreground">{profile.rating}</div>
+              <div className="text-xl font-bold text-foreground">{profile.communityMeets}</div>
+              <div className="text-xs text-muted-foreground">Meetups</div>
+            </div>
+            <div className="bg-card rounded-xl p-3 shadow-soft text-center">
+              <div className="w-9 h-9 rounded-lg bg-trust-gold/10 flex items-center justify-center mx-auto mb-2">
+                <Star className="w-4 h-4 text-trust-gold" />
+              </div>
+              <div className="text-xl font-bold text-foreground">{profile.rating}</div>
               <div className="text-xs text-muted-foreground">Rating</div>
             </div>
           </div>

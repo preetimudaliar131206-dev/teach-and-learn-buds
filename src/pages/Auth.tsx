@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Lock, User, ArrowLeft, Chrome } from "lucide-react";
+import { Mail, Lock, User, ArrowLeft, Chrome, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -119,6 +119,10 @@ export default function Auth() {
             <Button variant="social" className="w-full gap-3">
               <Chrome className="w-5 h-5" />
               Continue with Google
+            </Button>
+            <Button variant="social" className="w-full gap-3 bg-[#0077B5]/10 hover:bg-[#0077B5]/20 border-[#0077B5]/30">
+              <Linkedin className="w-5 h-5 text-[#0077B5]" />
+              Continue with LinkedIn
             </Button>
           </div>
 
