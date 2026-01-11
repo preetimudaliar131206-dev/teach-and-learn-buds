@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { Edit2, Settings, Plus, Coins, Calendar, Star, Users, Linkedin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Edit2, Settings, Plus, Coins, Calendar, Star, Users, Linkedin, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { TrustBadge } from "@/components/TrustBadge";
 import { SkillTag } from "@/components/SkillTag";
+import { LinkedInSettingsDialog } from "@/components/LinkedInSettingsDialog";
+import { CalendarEventDialog } from "@/components/CalendarEventDialog";
+import { useAuth } from "@/contexts/AuthContext";
+import { UserService } from "@/services/userService";
+import { User, LinkedInVisibility } from "@/types/userTypes";
+import { toast } from "sonner";
 
-const mockProfile = {
+const mockProfile: Partial<User> = {
   name: "Vikram Mehta",
   email: "vikram@example.com",
   avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
@@ -21,10 +27,51 @@ const mockProfile = {
   isTrusted: true,
   linkedInVerified: true,
   memberSince: "March 2024",
+  linkedinUrl: "https://linkedin.com/in/vikram-mehta",
+  linkedinVisibility: "public",
 };
 
 export default function Profile() {
-  const [profile] = useState(mockProfile);
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<Partial<User>>(mockProfile);
+  const [loading, setLoading] = useState(true);
+  const [isLinkedInDialogOpen, setIsLinkedInDialogOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        if (user?.id) {
+          const result = await UserService.getUserProfile(user.id);
+          if (result.data) {
+            setProfile(result.data);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProfile();
+  }, [user]);
+
+  const handleLinkedInUpdate = (url: string, visibility: LinkedInVisibility) => {
+    setProfile(prev => ({
+      ...prev,
+      linkedinUrl: url,
+      linkedinVisibility: visibility,
+      linkedInVerified: !!url
+    }));
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -72,22 +119,23 @@ export default function Profile() {
                   </p>
                 </div>
 
-              {/* Trust Badges */}
-              <div className="flex flex-wrap gap-2">
-                {profile.isVerified && <TrustBadge type="verified" />}
-                <TrustBadge type="rating" value={profile.rating} />
-                {profile.isTrusted && <TrustBadge type="trusted" />}
-                {profile.linkedInVerified && (
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#0077B5]/10 text-[#0077B5] border border-[#0077B5]/20">
+                {/* Trust Badges */}
+                <div className="flex flex-wrap gap-2">
+                  {profile.isVerified && <TrustBadge type="verified" />}
+                  <TrustBadge type="rating" value={profile.rating} />
+                  {profile.isTrusted && <TrustBadge type="trusted" />}
+                  <button
+                    onClick={() => user?.id && setIsLinkedInDialogOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#0077B5]/10 text-[#0077B5] border border-[#0077B5]/20 hover:bg-[#0077B5]/20 transition-colors"
+                  >
                     <Linkedin className="w-3 h-3" />
-                    LinkedIn
-                  </div>
-                )}
-              </div>
-              </div>
+                    {profile.linkedinUrl ? "LinkedIn Linked" : "Link LinkedIn"}
+                  </button>
+                </div>
 
-              {/* Bio */}
-              <p className="text-muted-foreground mt-4">{profile.bio}</p>
+                {/* Bio */}
+                <p className="text-muted-foreground mt-4">{profile.bio}</p>
+              </div>
             </div>
           </div>
 
@@ -133,7 +181,7 @@ export default function Profile() {
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {profile.skillsOffered.map((skill) => (
+              {profile.skillsOffered?.map((skill) => (
                 <SkillTag key={skill} skill={skill} variant="offered" />
               ))}
             </div>
@@ -149,7 +197,7 @@ export default function Profile() {
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {profile.skillsWanted.map((skill) => (
+              {profile.skillsWanted?.map((skill) => (
                 <SkillTag key={skill} skill={skill} variant="wanted" />
               ))}
             </div>
@@ -160,12 +208,40 @@ export default function Profile() {
             <Button variant="outline" className="flex-1">
               Edit Profile
             </Button>
-            <Button variant="hero" className="flex-1">
-              View Public Profile
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setIsCalendarOpen(true)}
+            >
+              Schedule Session
+            </Button>
+            <Button
+              variant="hero"
+              className="flex-1"
+              onClick={() => user?.id && setIsLinkedInDialogOpen(true)}
+            >
+              LinkedIn Settings
             </Button>
           </div>
         </div>
       </main>
+
+      {user?.id && (
+        <LinkedInSettingsDialog
+          open={isLinkedInDialogOpen}
+          onOpenChange={setIsLinkedInDialogOpen}
+          userId={user.id}
+          initialUrl={profile.linkedinUrl}
+          initialVisibility={profile.linkedinVisibility}
+          onSuccess={handleLinkedInUpdate}
+        />
+      )}
+
+      <CalendarEventDialog
+        open={isCalendarOpen}
+        onOpenChange={setIsCalendarOpen}
+      />
     </div>
   );
 }
+
