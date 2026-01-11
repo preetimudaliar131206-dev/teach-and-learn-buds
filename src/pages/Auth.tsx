@@ -1,20 +1,90 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
 import { Mail, Lock, User, ArrowLeft, Chrome, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AuthService } from "@/services/authService";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export default function Auth() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState(false);
+  const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setSocialLoading(true);
+      try {
+        console.log("Google Login Success:", tokenResponse);
+        // Store the google access token for Calendar usage
+        localStorage.setItem("google_access_token", tokenResponse.access_token);
+
+        // In a real app, send this to backend. 
+        // Here we just mimic a successful login to our app by calling the "fakelogin" endpoint or just reusing the manual login flow.
+        // Let's call our mock backend login endpoint to get an app token
+        await AuthService.login({
+          email: "google-user@example.com",
+          password: "dummy-password"
+        });
+
+        toast.success("Google Login Successful!");
+        await refreshUser();
+        navigate("/profile");
+      } catch (error: any) {
+        console.error("Google Login Logic Error:", error);
+        toast.error("Failed to process Google Login");
+      } finally {
+        setSocialLoading(false);
+      }
+    },
+    onError: (error) => {
+      console.error("Google Login Failed:", error);
+      toast.error("Google Login Failed");
+      setSocialLoading(false);
+    },
+    scope: 'https://www.googleapis.com/auth/calendar.events'
+  });
+
+  const handleGoogleLogin = () => {
+    loginWithGoogle();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement authentication with Lovable Cloud
-    console.log("Auth submitted:", { mode, email, password, name });
+    setLoading(true);
+
+    try {
+      if (mode === "signup") {
+        await AuthService.register({
+          email,
+          password,
+          name,
+        });
+        toast.success("Account created successfully!");
+        await refreshUser();
+        navigate("/profile");
+      } else {
+        await AuthService.login({
+          email,
+          password,
+        });
+        toast.success("Welcome back!");
+        await refreshUser();
+        navigate("/profile");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred during authentication");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,9 +186,14 @@ export default function Auth() {
 
           {/* Social Login */}
           <div className="space-y-3 mb-6">
-            <Button variant="social" className="w-full gap-3">
+            <Button
+              variant="social"
+              className="w-full gap-3"
+              onClick={handleGoogleLogin}
+              disabled={socialLoading || loading}
+            >
               <Chrome className="w-5 h-5" />
-              Continue with Google
+              {socialLoading ? "Connecting to Google..." : "Continue with Google"}
             </Button>
             <Button variant="social" className="w-full gap-3 bg-[#0077B5]/10 hover:bg-[#0077B5]/20 border-[#0077B5]/30">
               <Linkedin className="w-5 h-5 text-[#0077B5]" />
@@ -197,8 +272,8 @@ export default function Auth() {
               </div>
             )}
 
-            <Button variant="hero" type="submit" className="w-full">
-              {mode === "login" ? "Sign in" : "Create account"}
+            <Button variant="hero" type="submit" className="w-full" disabled={loading || socialLoading}>
+              {(loading) ? "Processing..." : (mode === "login" ? "Sign in" : "Create account")}
             </Button>
           </form>
 

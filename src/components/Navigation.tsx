@@ -1,19 +1,31 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Home, Search, Calendar, User, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Home, Search, Calendar, User, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Search, label: "Discover", path: "/discover" },
-  { icon: Calendar, label: "Sessions", path: "/sessions" },
-  { icon: User, label: "Profile", path: "/profile" },
-];
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Navigation() {
+  const { user, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navItems = [
+    {
+      icon: user ? LayoutDashboard : Home,
+      label: user ? "Dashboard" : "Home",
+      path: user ? "/dashboard" : "/"
+    },
+    { icon: Search, label: "Discover", path: "/discover" },
+    { icon: Calendar, label: "Sessions", path: "/sessions" },
+    { icon: User, label: "Profile", path: "/profile" },
+  ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <>
@@ -50,16 +62,25 @@ export function Navigation() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link to="/auth">
-              <Button variant="outline" size="sm">
-                Log in
+            {!user ? (
+              <>
+                <Link to="/auth">
+                  <Button variant="outline" size="sm">
+                    Log in
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="hero" size="sm">
+                    Sign up
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-destructive" onClick={handleSignOut}>
+                <LogOut className="w-4 h-4" />
+                Sign out
               </Button>
-            </Link>
-            <Link to="/auth">
-              <Button variant="hero" size="sm">
-                Sign up
-              </Button>
-            </Link>
+            )}
           </div>
         </div>
       </header>
@@ -111,16 +132,32 @@ export function Navigation() {
               })}
             </nav>
             <div className="flex gap-2 mt-4 pt-4 border-t border-border">
-              <Link to="/auth" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full">
-                  Log in
+              {!user ? (
+                <>
+                  <Link to="/auth" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      Log in
+                    </Button>
+                  </Link>
+                  <Link to="/auth" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="hero" className="w-full">
+                      Sign up
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <Button
+                  variant="ghost"
+                  className="w-full justify-center gap-2 text-muted-foreground hover:text-destructive"
+                  onClick={() => {
+                    handleSignOut();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <LogOut className="w-5 h-5" />
+                  Sign out
                 </Button>
-              </Link>
-              <Link to="/auth" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="hero" className="w-full">
-                  Sign up
-                </Button>
-              </Link>
+              )}
             </div>
           </div>
         )}
