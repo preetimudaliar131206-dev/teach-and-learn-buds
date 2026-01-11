@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          is_email_verified: boolean | null
+          is_linkedin_verified: boolean | null
+          linkedin_url: string | null
+          location: string | null
+          rating: number | null
+          skill_credits: number | null
+          skills_offered: string[] | null
+          skills_wanted: string[] | null
+          total_sessions: number | null
+          trust_score: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          is_email_verified?: boolean | null
+          is_linkedin_verified?: boolean | null
+          linkedin_url?: string | null
+          location?: string | null
+          rating?: number | null
+          skill_credits?: number | null
+          skills_offered?: string[] | null
+          skills_wanted?: string[] | null
+          total_sessions?: number | null
+          trust_score?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          is_email_verified?: boolean | null
+          is_linkedin_verified?: boolean | null
+          linkedin_url?: string | null
+          location?: string | null
+          rating?: number | null
+          skill_credits?: number | null
+          skills_offered?: string[] | null
+          skills_wanted?: string[] | null
+          total_sessions?: number | null
+          trust_score?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,20 +1,54 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, ArrowLeft, Chrome, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Auth() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { user, signIn, signUp, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user) {
+      navigate('/discover');
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement authentication with Lovable Cloud
-    console.log("Auth submitted:", { mode, email, password, name });
+    setIsLoading(true);
+    
+    try {
+      if (mode === "login") {
+        await signIn(email, password);
+      } else {
+        await signUp(email, password, name);
+      }
+      navigate('/discover');
+    } catch (error) {
+      // Error is already handled in useAuth
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      // Error is already handled in useAuth
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -116,13 +150,22 @@ export default function Auth() {
 
           {/* Social Login */}
           <div className="space-y-3 mb-6">
-            <Button variant="social" className="w-full gap-3">
+            <Button 
+              variant="social" 
+              className="w-full gap-3"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+            >
               <Chrome className="w-5 h-5" />
               Continue with Google
             </Button>
-            <Button variant="social" className="w-full gap-3 bg-[#0077B5]/10 hover:bg-[#0077B5]/20 border-[#0077B5]/30">
+            <Button 
+              variant="social" 
+              className="w-full gap-3 bg-[#0077B5]/10 hover:bg-[#0077B5]/20 border-[#0077B5]/30"
+              disabled
+            >
               <Linkedin className="w-5 h-5 text-[#0077B5]" />
-              Continue with LinkedIn
+              Continue with LinkedIn (Coming Soon)
             </Button>
           </div>
 
@@ -147,10 +190,11 @@ export default function Auth() {
                   <Input
                     id="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Rahul Sharma"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="pl-10"
+                    required
                   />
                 </div>
               </div>
@@ -167,6 +211,7 @@ export default function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
+                  required
                 />
               </div>
             </div>
@@ -182,6 +227,8 @@ export default function Auth() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"
+                  required
+                  minLength={6}
                 />
               </div>
             </div>
@@ -197,8 +244,8 @@ export default function Auth() {
               </div>
             )}
 
-            <Button variant="hero" type="submit" className="w-full">
-              {mode === "login" ? "Sign in" : "Create account"}
+            <Button variant="hero" type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Loading..." : mode === "login" ? "Sign in" : "Create account"}
             </Button>
           </form>
 
