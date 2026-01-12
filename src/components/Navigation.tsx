@@ -1,15 +1,9 @@
 import { useState } from "react";
-<<<<<<< HEAD
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Search, Calendar, User, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
+import { Home, Search, Calendar, User, Menu, X, Users, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/contexts/AuthContext";
-=======
-import { Link, useLocation } from "react-router-dom";
-import { Home, Search, Calendar, User, Menu, X, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
@@ -18,24 +12,12 @@ const navItems = [
   { icon: Users, label: "Meetups", path: "/meetups" },
   { icon: User, label: "Profile", path: "/profile" },
 ];
->>>>>>> 24226fc711e6b38cd1ddbeadba56989d21124e4d
 
 export function Navigation() {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const navItems = [
-    {
-      icon: user ? LayoutDashboard : Home,
-      label: user ? "Dashboard" : "Home",
-      path: user ? "/dashboard" : "/"
-    },
-    { icon: Search, label: "Discover", path: "/discover" },
-    { icon: Calendar, label: "Sessions", path: "/sessions" },
-    { icon: User, label: "Profile", path: "/profile" },
-  ];
 
   const handleSignOut = async () => {
     await signOut();
